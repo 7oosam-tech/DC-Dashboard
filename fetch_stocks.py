@@ -6,7 +6,7 @@ import time
 import yfinance as yf
 from datetime import datetime, timezone
 
-MODEL = "claude-sonnet-4-20250514"
+MODEL = "claude-sonnet-4-5"
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
 STOCKS = [
