@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-25 23:24 UTC",
+  "last_updated": "2026-05-25 23:35 UTC",
   "stocks": [
     {
       "id": "delta",
@@ -11,9 +11,9 @@
       "currency": "TWD",
       "price_usd": 72.81,
       "change_pct": 9.31,
-      "high_52w_usd": 75.36,
-      "low_52w_usd": 11.61,
-      "analyst_target_usd": 79.92,
+      "high_52w_usd": 75.35,
+      "low_52w_usd": 11.6,
+      "analyst_target_usd": 80.16,
       "analyst_rating": "Buy",
       "analyst_count": 19,
       "last_search": "2026-05-25"
@@ -30,7 +30,7 @@
       "change_pct": 9.9,
       "high_52w_usd": 7.82,
       "low_52w_usd": 3.18,
-      "analyst_target_usd": 6.59,
+      "analyst_target_usd": 6.6,
       "analyst_rating": "Buy",
       "analyst_count": 9,
       "last_search": "2026-05-25"
@@ -64,7 +64,7 @@
       "change_pct": 5.03,
       "high_52w_usd": 476.53,
       "low_52w_usd": 105.06,
-      "analyst_target_usd": 426.8,
+      "analyst_target_usd": 426.71,
       "analyst_rating": "Buy",
       "analyst_count": 31,
       "last_search": "2026-05-25"
@@ -81,7 +81,7 @@
       "change_pct": 2.0,
       "high_52w_usd": 4.53,
       "low_52w_usd": 3.01,
-      "analyst_target_usd": 4.18,
+      "analyst_target_usd": 4.19,
       "analyst_rating": "Buy",
       "analyst_count": 23,
       "last_search": "2026-05-25"
@@ -115,9 +115,9 @@
       "change_pct": -0.15,
       "high_52w_usd": 51.25,
       "low_52w_usd": 28.8,
-      "analyst_target_usd": null,
-      "analyst_rating": "",
-      "analyst_count": 0,
+      "analyst_target_usd": 40.35,
+      "analyst_rating": "Hold",
+      "analyst_count": 20,
       "last_search": "2026-05-25"
     },
     {
@@ -132,8 +132,8 @@
       "change_pct": 5.0,
       "high_52w_usd": 1.6,
       "low_52w_usd": 0.79,
-      "analyst_target_usd": null,
-      "analyst_rating": "",
+      "analyst_target_usd": 11.03,
+      "analyst_rating": "Hold",
       "analyst_count": 0,
       "last_search": "2026-05-25"
     },
@@ -162,11 +162,11 @@
       "country": "Sweden",
       "price_local": 551.6,
       "currency": "SEK",
-      "price_usd": 59.38,
+      "price_usd": 59.36,
       "change_pct": 0.04,
-      "high_52w_usd": 62.42,
-      "low_52w_usd": 41.78,
-      "analyst_target_usd": 58.83,
+      "high_52w_usd": 62.39,
+      "low_52w_usd": 41.76,
+      "analyst_target_usd": 58.89,
       "analyst_rating": "Buy",
       "analyst_count": 16,
       "last_search": "2026-05-25"
@@ -183,9 +183,9 @@
       "change_pct": 3.79,
       "high_52w_usd": 294.06,
       "low_52w_usd": 86.48,
-      "analyst_target_usd": null,
-      "analyst_rating": "",
-      "analyst_count": 0,
+      "analyst_target_usd": 265.57,
+      "analyst_rating": "Strong Buy",
+      "analyst_count": 8,
       "last_search": "2026-05-25"
     },
     {
@@ -200,9 +200,9 @@
       "change_pct": 1.58,
       "high_52w_usd": 149.0,
       "low_52w_usd": 62.0,
-      "analyst_target_usd": null,
-      "analyst_rating": "",
-      "analyst_count": 0,
+      "analyst_target_usd": 119.0,
+      "analyst_rating": "Strong Buy",
+      "analyst_count": 5,
       "last_search": "2026-05-25"
     },
     {
@@ -217,9 +217,9 @@
       "change_pct": 1.02,
       "high_52w_usd": 317.1,
       "low_52w_usd": 221.52,
-      "analyst_target_usd": null,
-      "analyst_rating": "",
-      "analyst_count": 0,
+      "analyst_target_usd": 330.0,
+      "analyst_rating": "Strong Buy",
+      "analyst_count": 8,
       "last_search": "2026-05-25"
     },
     {
@@ -234,9 +234,9 @@
       "change_pct": 1.71,
       "high_52w_usd": 17.26,
       "low_52w_usd": 10.94,
-      "analyst_target_usd": null,
-      "analyst_rating": "",
-      "analyst_count": 0,
+      "analyst_target_usd": 17.67,
+      "analyst_rating": "Strong Buy",
+      "analyst_count": 3,
       "last_search": "2026-05-25"
     }
   ]
