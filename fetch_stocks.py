@@ -2,6 +2,7 @@ import anthropic
 import json
 import os
 import re
+import yfinance as yf
 from datetime import datetime, timezone
 
 MODEL = "claude-sonnet-4-20250514"
@@ -24,44 +25,91 @@ STOCKS = [
     {"id": "dnow",        "name": "NOW Inc",                         "ticker": "DNOW",        "exchange": "NYSE",   "country": "USA",         "currency": "USD"},
 ]
 
+# yfinance FX ticker format: <CCY>USD=X gives units of USD per 1 local unit
+FX_PAIRS = {"TWD": "TWDUSD=X", "KRW": "KRWUSD=X", "INR": "INRUSD=X", "DKK": "DKKUSD=X", "SEK": "SEKUSD=X"}
+
+
+# ── FX rates ──────────────────────────────────────────────────────────────────
+
+def load_fx_rates():
+    rates = {"USD": 1.0}
+    for ccy, fx_ticker in FX_PAIRS.items():
+        try:
+            info = yf.Ticker(fx_ticker).fast_info
+            rate = info.last_price
+            if rate and rate > 0:
+                rates[ccy] = rate
+                print(f"  FX {ccy}/USD = {rate:.6f}")
+            else:
+                raise ValueError("no price")
+        except Exception as e:
+            print(f"  FX {ccy}/USD failed ({e}) — will leave price_usd as 0")
+            rates[ccy] = None
+    return rates
+
+
+# ── yfinance price data ───────────────────────────────────────────────────────
+
+def fetch_price_data(stock, fx_rates):
+    ticker = yf.Ticker(stock["ticker"])
+    fi = ticker.fast_info
+
+    price_local = fi.last_price or 0.0
+    prev_close  = fi.previous_close or 0.0
+    high_52w    = fi.year_high or 0.0
+    low_52w     = fi.year_low  or 0.0
+
+    change_pct = round((price_local - prev_close) / prev_close * 100, 2) if prev_close else 0.0
+
+    ccy  = stock["currency"]
+    rate = fx_rates.get(ccy)
+
+    if ccy == "USD":
+        price_usd    = round(price_local, 2)
+        high_52w_usd = round(high_52w, 2)
+        low_52w_usd  = round(low_52w,  2)
+    elif rate:
+        price_usd    = round(price_local * rate, 2)
+        high_52w_usd = round(high_52w    * rate, 2)
+        low_52w_usd  = round(low_52w     * rate, 2)
+    else:
+        price_usd = high_52w_usd = low_52w_usd = 0.0
+
+    return {
+        "price_local":  round(price_local, 2),
+        "price_usd":    price_usd,
+        "change_pct":   change_pct,
+        "high_52w_usd": high_52w_usd,
+        "low_52w_usd":  low_52w_usd,
+    }
+
+
+# ── Claude web search for analyst data ───────────────────────────────────────
 
 def run_claude(prompt):
-    """Run Claude with web search in an agentic loop until end_turn."""
     messages = [{"role": "user", "content": prompt}]
-
-    for _ in range(20):
+    for _ in range(15):
         response = client.messages.create(
             model=MODEL,
-            max_tokens=2048,
+            max_tokens=512,
             tools=[{"type": "web_search_20250305", "name": "web_search"}],
             messages=messages,
         )
-
         if response.stop_reason == "end_turn":
             return response
-
-        # Append assistant turn and send back tool results to continue the loop
         messages.append({"role": "assistant", "content": response.content})
-
         tool_results = [
-            {"type": "tool_result", "tool_use_id": block.id, "content": ""}
-            for block in response.content
-            if getattr(block, "type", None) == "tool_use"
+            {"type": "tool_result", "tool_use_id": b.id, "content": ""}
+            for b in response.content if getattr(b, "type", None) == "tool_use"
         ]
-
         if not tool_results:
-            return response  # no tool calls but not end_turn — return anyway
-
+            return response
         messages.append({"role": "user", "content": tool_results})
-
     return response
 
 
-def extract_json_object(text):
-    """Extract the first JSON object found in text."""
-    match = re.search(r'\{[\s\S]*?\}(?=\s*$|\s*\n)', text)
-    if not match:
-        match = re.search(r'\{[\s\S]*\}', text)
+def extract_json(text):
+    match = re.search(r'\{[\s\S]*\}', text)
     if match:
         try:
             return json.loads(match.group())
@@ -70,29 +118,16 @@ def extract_json_object(text):
     return None
 
 
-def fetch_stock(stock):
-    """Use Claude + web search to get current data for one stock."""
-    prompt = f"""Search the web right now for current stock market data for {stock['name']} (ticker: {stock['ticker']}, listed on {stock['exchange']}, country: {stock['country']}).
+def fetch_analyst_data(stock):
+    prompt = f"""Search the web for the latest analyst consensus data for {stock['name']} (ticker: {stock['ticker']}, {stock['exchange']}).
 
-Find these exact values today:
-1. Current price in {stock['currency']} (local currency)
-2. Current price converted to USD (use today's exchange rate if not already USD)
-3. Today's percentage change (positive = gain, negative = loss, e.g. 1.25 or -0.80)
-4. 52-week high price in USD
-5. 52-week low price in USD
-6. Analyst consensus price target in USD (if available)
-7. Analyst consensus rating text (e.g. "Buy", "Strong Buy", "Hold", "Sell")
-8. Number of analysts providing coverage
+Find:
+1. Analyst consensus price target in USD
+2. Analyst consensus rating (e.g. "Buy", "Strong Buy", "Hold", "Sell", "Outperform")
+3. Number of analysts providing coverage
 
-Search sources like Yahoo Finance, Google Finance, Reuters, Bloomberg, or exchange websites.
-
-Respond with ONLY this JSON object and nothing else:
+Return ONLY this JSON object with no other text:
 {{
-  "price_local": <number>,
-  "price_usd": <number>,
-  "change_pct": <number>,
-  "high_52w_usd": <number>,
-  "low_52w_usd": <number>,
   "analyst_target_usd": <number or null>,
   "analyst_rating": "<string or empty string>",
   "analyst_count": <integer>
@@ -103,25 +138,25 @@ Respond with ONLY this JSON object and nothing else:
         for block in response.content:
             text = getattr(block, "text", None)
             if text:
-                data = extract_json_object(text)
-                if data and "price_usd" in data:
+                data = extract_json(text)
+                if data is not None:
                     return data
     except Exception as e:
-        print(f"  ERROR: {e}")
+        print(f"    Claude error: {e}")
+    return {"analyst_target_usd": None, "analyst_rating": "", "analyst_count": 0}
 
-    return None
 
+# ── Main ──────────────────────────────────────────────────────────────────────
 
-def safe_float(val, default=0.0):
+def safe_float(v, default=0.0):
     try:
-        return round(float(val), 2) if val is not None else default
+        return round(float(v), 2) if v is not None else default
     except (TypeError, ValueError):
         return default
 
-
-def safe_int(val, default=0):
+def safe_int(v, default=0):
     try:
-        return int(val) if val is not None else default
+        return int(v) if v is not None else default
     except (TypeError, ValueError):
         return default
 
@@ -131,52 +166,50 @@ def main():
     today = now.strftime("%Y-%m-%d")
     last_updated = now.strftime("%Y-%m-%d %H:%M UTC")
 
+    print("Loading FX rates...")
+    fx_rates = load_fx_rates()
+
     stocks_data = []
 
     for stock in STOCKS:
-        print(f"\nFetching {stock['name']} ({stock['ticker']})...")
-        result = fetch_stock(stock)
+        print(f"\n{'─'*55}")
+        print(f"  {stock['name']} ({stock['ticker']})")
 
-        if result:
-            entry = {
-                "id":                 stock["id"],
-                "name":               stock["name"],
-                "ticker":             stock["ticker"],
-                "exchange":           stock["exchange"],
-                "country":            stock["country"],
-                "price_local":        safe_float(result.get("price_local")),
-                "currency":           stock["currency"],
-                "price_usd":          safe_float(result.get("price_usd")),
-                "change_pct":         safe_float(result.get("change_pct")),
-                "high_52w_usd":       safe_float(result.get("high_52w_usd")),
-                "low_52w_usd":        safe_float(result.get("low_52w_usd")),
-                "analyst_target_usd": safe_float(result.get("analyst_target_usd")) if result.get("analyst_target_usd") else None,
-                "analyst_rating":     str(result.get("analyst_rating") or ""),
-                "analyst_count":      safe_int(result.get("analyst_count")),
-                "last_search":        today,
-            }
-            print(f"  price_usd=${entry['price_usd']}  change={entry['change_pct']:+.2f}%  rating={entry['analyst_rating'] or '—'}")
-        else:
-            entry = {
-                "id":                 stock["id"],
-                "name":               stock["name"],
-                "ticker":             stock["ticker"],
-                "exchange":           stock["exchange"],
-                "country":            stock["country"],
-                "price_local":        0.0,
-                "currency":           stock["currency"],
-                "price_usd":          0.0,
-                "change_pct":         0.0,
-                "high_52w_usd":       0.0,
-                "low_52w_usd":        0.0,
-                "analyst_target_usd": None,
-                "analyst_rating":     "",
-                "analyst_count":      0,
-                "last_search":        today,
-            }
-            print("  FAILED — using zeros")
+        # 1. Real price data via yfinance
+        try:
+            prices = fetch_price_data(stock, fx_rates)
+            print(f"  yfinance → price={prices['price_local']} {stock['currency']}  "
+                  f"USD={prices['price_usd']}  change={prices['change_pct']:+.2f}%  "
+                  f"52w [{prices['low_52w_usd']} – {prices['high_52w_usd']}]")
+        except Exception as e:
+            print(f"  yfinance ERROR: {e}")
+            prices = {"price_local": 0.0, "price_usd": 0.0, "change_pct": 0.0,
+                      "high_52w_usd": 0.0, "low_52w_usd": 0.0}
 
-        stocks_data.append(entry)
+        # 2. Analyst data via Claude + web search
+        print(f"  Fetching analyst data via Claude...")
+        analyst = fetch_analyst_data(stock)
+        print(f"  Claude → target={analyst.get('analyst_target_usd')}  "
+              f"rating={analyst.get('analyst_rating') or '—'}  "
+              f"analysts={analyst.get('analyst_count')}")
+
+        stocks_data.append({
+            "id":                 stock["id"],
+            "name":               stock["name"],
+            "ticker":             stock["ticker"],
+            "exchange":           stock["exchange"],
+            "country":            stock["country"],
+            "price_local":        safe_float(prices["price_local"]),
+            "currency":           stock["currency"],
+            "price_usd":          safe_float(prices["price_usd"]),
+            "change_pct":         safe_float(prices["change_pct"]),
+            "high_52w_usd":       safe_float(prices["high_52w_usd"]),
+            "low_52w_usd":        safe_float(prices["low_52w_usd"]),
+            "analyst_target_usd": safe_float(analyst.get("analyst_target_usd")) if analyst.get("analyst_target_usd") else None,
+            "analyst_rating":     str(analyst.get("analyst_rating") or ""),
+            "analyst_count":      safe_int(analyst.get("analyst_count")),
+            "last_search":        today,
+        })
 
     output = {"last_updated": last_updated, "stocks": stocks_data}
 
@@ -184,7 +217,8 @@ def main():
         json.dump(output, f, indent=2, ensure_ascii=False)
 
     succeeded = sum(1 for s in stocks_data if s["price_usd"] > 0)
-    print(f"\n✓ data.json saved — {succeeded}/{len(stocks_data)} stocks fetched successfully")
+    print(f"\n{'='*55}")
+    print(f"✓ data.json saved — {succeeded}/{len(stocks_data)} stocks with real prices")
     print(f"  last_updated: {last_updated}")
 
 

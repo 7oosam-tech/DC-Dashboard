@@ -24,7 +24,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install anthropic requests
+        run: pip install anthropic requests yfinance
 
       - name: Fetch stock data via Claude
         env:
