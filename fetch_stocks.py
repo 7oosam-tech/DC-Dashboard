@@ -2,6 +2,7 @@ import anthropic
 import json
 import os
 import re
+import time
 import yfinance as yf
 from datetime import datetime, timezone
 
@@ -86,28 +87,6 @@ def fetch_price_data(stock, fx_rates):
 
 # ── Claude web search for analyst data ───────────────────────────────────────
 
-def run_claude(prompt):
-    messages = [{"role": "user", "content": prompt}]
-    for _ in range(15):
-        response = client.messages.create(
-            model=MODEL,
-            max_tokens=512,
-            tools=[{"type": "web_search_20250305", "name": "web_search"}],
-            messages=messages,
-        )
-        if response.stop_reason == "end_turn":
-            return response
-        messages.append({"role": "assistant", "content": response.content})
-        tool_results = [
-            {"type": "tool_result", "tool_use_id": b.id, "content": ""}
-            for b in response.content if getattr(b, "type", None) == "tool_use"
-        ]
-        if not tool_results:
-            return response
-        messages.append({"role": "user", "content": tool_results})
-    return response
-
-
 def extract_json(text):
     match = re.search(r'\{[\s\S]*\}', text)
     if match:
@@ -119,30 +98,35 @@ def extract_json(text):
 
 
 def fetch_analyst_data(stock):
-    prompt = f"""Search the web for the latest analyst consensus data for {stock['name']} (ticker: {stock['ticker']}, {stock['exchange']}).
-
-Find:
-1. Analyst consensus price target in USD
-2. Analyst consensus rating (e.g. "Buy", "Strong Buy", "Hold", "Sell", "Outperform")
-3. Number of analysts providing coverage
-
-Return ONLY this JSON object with no other text:
-{{
-  "analyst_target_usd": <number or null>,
-  "analyst_rating": "<string or empty string>",
-  "analyst_count": <integer>
-}}"""
-
     try:
-        response = run_claude(prompt)
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=500,
+            tools=[{"type": "web_search_20250305", "name": "web_search"}],
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"Search for the current analyst consensus price target and rating for "
+                    f"{stock['name']} stock ticker {stock['ticker']}. "
+                    f"Return ONLY a JSON object with these exact fields: "
+                    f"{{\"target_usd\": <number or null>, \"rating\": \"<Strong Buy|Buy|Hold|Sell or empty string>\", "
+                    f"\"analyst_count\": <number or 0>}}. Convert target to USD if needed. No other text."
+                )
+            }]
+        )
+
         for block in response.content:
-            text = getattr(block, "text", None)
-            if text:
-                data = extract_json(text)
+            if getattr(block, "type", None) == "text" and block.text:
+                data = extract_json(block.text)
                 if data is not None:
-                    return data
+                    return {
+                        "analyst_target_usd": data.get("target_usd"),
+                        "analyst_rating":     str(data.get("rating") or ""),
+                        "analyst_count":      data.get("analyst_count", 0),
+                    }
     except Exception as e:
         print(f"    Claude error: {e}")
+
     return {"analyst_target_usd": None, "analyst_rating": "", "analyst_count": 0}
 
 
@@ -188,6 +172,7 @@ def main():
 
         # 2. Analyst data via Claude + web search
         print(f"  Fetching analyst data via Claude...")
+        time.sleep(2)
         analyst = fetch_analyst_data(stock)
         print(f"  Claude → target={analyst.get('analyst_target_usd')}  "
               f"rating={analyst.get('analyst_rating') or '—'}  "
