@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-25 23:03 UTC",
+  "last_updated": "2026-05-25 23:17 UTC",
   "stocks": [
     {
       "id": "delta",
@@ -9,9 +9,9 @@
       "country": "Taiwan",
       "price_local": 2290.0,
       "currency": "TWD",
-      "price_usd": 72.84,
+      "price_usd": 72.83,
       "change_pct": 9.31,
-      "high_52w_usd": 75.39,
+      "high_52w_usd": 75.38,
       "low_52w_usd": 11.61,
       "analyst_target_usd": null,
       "analyst_rating": "",
@@ -162,7 +162,7 @@
       "country": "Sweden",
       "price_local": 551.6,
       "currency": "SEK",
-      "price_usd": 59.39,
+      "price_usd": 59.38,
       "change_pct": 0.04,
       "high_52w_usd": 62.42,
       "low_52w_usd": 41.78,
