@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DC Investment Dashboard</title>
+  <style>
+    :root {
+      --bg:        #0b0b12;
+      --surface:   #111119;
+      --surface2:  #17171f;
+      --border:    #23233a;
+      --border2:   #2e2e48;
+      --text:      #ddddf0;
+      --muted:     #6060808;
+      --muted2:    #9090b0;
+      --green:     #22c55e;
+      --green-dim: #16603a;
+      --red:       #ef4444;
+      --red-dim:   #6b1e1e;
+      --amber:     #f59e0b;
+      --blue:      #60a5fa;
+      --purple:    #a78bfa;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,11,18,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -1px;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #last-updated {
+      font-size: 12px;
+      color: var(--muted2);
+    }
+
+    .refresh-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      border-radius: 7px;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .refresh-btn:hover { background: #20202e; border-color: #3a3a58; }
+    .refresh-btn svg { transition: transform 0.4s; }
+    .refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Main ── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 28px 60px;
+    }
+
+    /* ── Country group ── */
+    .country-group { margin-bottom: 40px; }
+
+    .country-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .country-flag { font-size: 22px; line-height: 1; }
+
+    .country-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .country-count {
+      font-size: 12px;
+      color: var(--muted2);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 10px;
+      margin-left: 2px;
+    }
+
+    /* ── Stock grid ── */
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── Stock card ── */
+    .stock-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .stock-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-1px);
+    }
+
+    /* Card header */
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .stock-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .stock-meta {
+      font-size: 11.5px;
+      color: var(--muted2);
+      margin-top: 3px;
+    }
+
+    /* Risk badge */
+    .risk-badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .risk-low  { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .risk-med  { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .risk-high { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .risk-na   { background: rgba(100,100,130,0.15); color: var(--muted2); border: 1px solid var(--border2); }
+
+    /* Price row */
+    .price-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .price-local {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .price-usd {
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 4px;
+    }
+
+    .change-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    .change-pill.up   { background: rgba(34,197,94,0.12);  color: var(--green); }
+    .change-pill.down { background: rgba(239,68,68,0.12);  color: var(--red); }
+    .change-pill.flat { background: var(--surface2); color: var(--muted2); }
+
+    /* 52-week range */
+    .range-section { display: flex; flex-direction: column; gap: 7px; }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted2);
+    }
+
+    .range-track {
+      position: relative;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 4px;
+    }
+
+    .range-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .range-dot {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border: 2px solid #6366f1;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(99,102,241,0.6);
+      transition: left 0.4s ease;
+    }
+
+    .range-current-label {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted2);
+    }
+
+    /* Analyst section */
+    .analyst-section {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .analyst-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+    }
+
+    .analyst-label { color: var(--muted2); }
+
+    .analyst-value { font-weight: 500; color: var(--text); }
+
+    .upside   { color: var(--green); font-weight: 600; }
+    .downside { color: var(--red);   font-weight: 600; }
+
+    .rating-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    .rating-buy    { background: rgba(34,197,94,0.15);  color: #4ade80; }
+    .rating-hold   { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .rating-sell   { background: rgba(239,68,68,0.15);  color: #f87171; }
+    .rating-none   { background: var(--border); color: var(--muted2); }
+
+    /* Card footer */
+    .card-footer {
+      font-size: 11px;
+      color: var(--muted2);
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* States */
+    .loading-state, .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      gap: 12px;
+      color: var(--muted2);
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border2);
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .error-state { color: var(--red); }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      main { padding: 20px 14px 40px; }
+      header { padding: 0 14px; }
+      h1 { font-size: 15px; }
+      .stock-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">DC</div>
+    <h1>Investment Dashboard</h1>
+  </div>
+  <div class="header-right">
+    <span id="last-updated">—</span>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadData()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<main id="dashboard">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading stock data…</span>
+  </div>
+</main>
+
+<script>
+  const GITHUB_TOKEN = "PASTE_YOUR_TOKEN_HERE";
+  const GITHUB_REPO  = "7oosam-tech/DC-Dashboard";
+
+  const COUNTRY_ORDER = ["Taiwan", "South Korea", "India", "Denmark", "Sweden", "USA"];
+
+  const COUNTRY_FLAGS = {
+    "Taiwan":      "🇹🇼",
+    "South Korea": "🇰🇷",
+    "India":       "🇮🇳",
+    "Denmark":     "🇩🇰",
+    "Sweden":      "🇸🇪",
+    "USA":         "🇺🇸"
+  };
+
+  const CURRENCY_SYMBOLS = {
+    TWD: "NT$", KRW: "₩", INR: "₹",
+    DKK: "kr ", SEK: "kr ", USD: "$"
+  };
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  function fmt(val, decimals = 2) {
+    if (val == null || val === 0) return "—";
+    return Number(val).toLocaleString("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+  }
+
+  function fmtLocal(val, currency) {
+    if (!val) return "—";
+    const sym = CURRENCY_SYMBOLS[currency] || "";
+    return sym + fmt(val);
+  }
+
+  function fmtUSD(val) {
+    if (!val) return "—";
+    return "$" + fmt(val);
+  }
+
+  function get52wPos(stock) {
+    const { price_usd: p, high_52w_usd: hi, low_52w_usd: lo } = stock;
+    if (!hi || !lo || hi === lo) return 50;
+    return Math.max(0, Math.min(100, ((p - lo) / (hi - lo)) * 100));
+  }
+
+  function getUpside(stock) {
+    if (!stock.analyst_target_usd || !stock.price_usd) return null;
+    return ((stock.analyst_target_usd - stock.price_usd) / stock.price_usd) * 100;
+  }
+
+  function getRisk(stock) {
+    const r = (stock.analyst_rating || "").toLowerCase();
+    if (!r || stock.analyst_count === 0) return { label: "N/A", cls: "risk-na" };
+    if (r.includes("strong buy"))                                          return { label: "Low Risk",  cls: "risk-low" };
+    if (r.includes("buy") || r.includes("outperform") || r.includes("overweight"))
+                                                                           return { label: "Low Risk",  cls: "risk-low" };
+    if (r.includes("sell") || r.includes("underperform") || r.includes("underweight") || r.includes("strong sell"))
+                                                                           return { label: "High Risk", cls: "risk-high" };
+    return { label: "Med Risk", cls: "risk-med" };
+  }
+
+  function getRatingPill(rating) {
+    if (!rating) return `<span class="rating-pill rating-none">—</span>`;
+    const r = rating.toLowerCase();
+    let cls = "rating-hold";
+    if (r.includes("buy") || r.includes("outperform") || r.includes("overweight")) cls = "rating-buy";
+    if (r.includes("sell") || r.includes("underperform"))                           cls = "rating-sell";
+    return `<span class="rating-pill ${cls}">${rating}</span>`;
+  }
+
+  // ── Render card ──────────────────────────────────────────────────────────
+
+  function renderCard(s) {
+    const risk   = getRisk(s);
+    const pos    = get52wPos(s);
+    const upside = getUpside(s);
+    const chg    = s.change_pct;
+
+    const changeCls  = chg > 0 ? "up" : chg < 0 ? "down" : "flat";
+    const changeIcon = chg > 0 ? "▲" : chg < 0 ? "▼" : "—";
+
+    const upsideHTML = upside !== null
+      ? `<div class="analyst-row">
+           <span class="analyst-label">Upside / Downside</span>
+           <span class="${upside >= 0 ? "upside" : "downside"}">${upside >= 0 ? "+" : ""}${upside.toFixed(1)}%</span>
+         </div>`
+      : "";
+
+    const analystCount = s.analyst_count ? ` <span style="color:var(--muted2);font-weight:400">(${s.analyst_count})</span>` : "";
+
+    return `
+      <div class="stock-card">
+
+        <div class="card-top">
+          <div>
+            <div class="stock-name">${s.name}</div>
+            <div class="stock-meta">${s.ticker} &middot; ${s.exchange} &middot; ${s.country}</div>
+          </div>
+          <span class="risk-badge ${risk.cls}">${risk.label}</span>
+        </div>
+
+        <div class="price-row">
+          <div>
+            <div class="price-local">${fmtLocal(s.price_local, s.currency)}</div>
+            <div class="price-usd">${fmtUSD(s.price_usd)} USD</div>
+          </div>
+          <div class="change-pill ${changeCls}">
+            ${changeIcon} ${chg != null ? Math.abs(chg).toFixed(2) + "%" : "—"}
+          </div>
+        </div>
+
+        <div class="range-section">
+          <div class="range-labels">
+            <span>52W Lo: ${fmtUSD(s.low_52w_usd)}</span>
+            <span>52W Hi: ${fmtUSD(s.high_52w_usd)}</span>
+          </div>
+          <div class="range-track">
+            <div class="range-fill" style="width:${pos}%"></div>
+            <div class="range-dot"  style="left:${pos}%"></div>
+          </div>
+          <div class="range-current-label">Current ${fmtUSD(s.price_usd)} · ${pos.toFixed(0)}% of range</div>
+        </div>
+
+        <div class="analyst-section">
+          <div class="analyst-row">
+            <span class="analyst-label">Analyst Target</span>
+            <span class="analyst-value">${fmtUSD(s.analyst_target_usd)}</span>
+          </div>
+          <div class="analyst-row">
+            <span class="analyst-label">Consensus Rating</span>
+            <span>${getRatingPill(s.analyst_rating)}${analystCount}</span>
+          </div>
+          ${upsideHTML}
+        </div>
+
+        <div class="card-footer">
+          <span>Last data: ${s.last_search || "—"}</span>
+          <span style="color:var(--border2)">&#9679;</span>
+          <span>${s.currency}</span>
+        </div>
+
+      </div>`;
+  }
+
+  // ── Render dashboard ─────────────────────────────────────────────────────
+
+  function renderDashboard(data) {
+    document.getElementById("last-updated").textContent =
+      "Updated " + (data.last_updated || "—");
+
+    const grouped = {};
+    for (const s of data.stocks) {
+      (grouped[s.country] = grouped[s.country] || []).push(s);
+    }
+
+    const dashboard = document.getElementById("dashboard");
+    dashboard.innerHTML = "";
+
+    const countries = COUNTRY_ORDER.filter(c => grouped[c]);
+    for (const country of countries) {
+      const stocks = grouped[country];
+      const section = document.createElement("section");
+      section.className = "country-group";
+      section.innerHTML = `
+        <div class="country-header">
+          <span class="country-flag">${COUNTRY_FLAGS[country] || ""}</span>
+          <span class="country-name">${country}</span>
+          <span class="country-count">${stocks.length} stock${stocks.length !== 1 ? "s" : ""}</span>
+        </div>
+        <div class="stock-grid">
+          ${stocks.map(renderCard).join("")}
+        </div>`;
+      dashboard.appendChild(section);
+    }
+  }
+
+  // ── Fetch ─────────────────────────────────────────────────────────────────
+
+  async function loadData() {
+    const btn = document.getElementById("refresh-btn");
+    btn.classList.add("spinning");
+
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/data.json`,
+        {
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3.raw",
+            "Cache-Control": "no-cache"
+          }
+        }
+      );
+
+      if (!res.ok) {
+        const msg = res.status === 401
+          ? "Invalid or missing GitHub token — update GITHUB_TOKEN in this file."
+          : res.status === 404
+          ? "data.json not found in the repository."
+          : `GitHub API error ${res.status}`;
+        throw new Error(msg);
+      }
+
+      const data = await res.json();
+      renderDashboard(data);
+
+    } catch (err) {
+      document.getElementById("dashboard").innerHTML = `
+        <div class="error-state">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <strong>Failed to load data</strong>
+          <span style="font-size:13px;color:var(--muted2)">${err.message}</span>
+        </div>`;
+    } finally {
+      btn.classList.remove("spinning");
+    }
+  }
+
+  loadData();
+</script>
+</body>
+</html>
