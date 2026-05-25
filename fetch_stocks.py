@@ -101,7 +101,7 @@ def fetch_analyst_data(stock):
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=500,
+            max_tokens=1024,
             tools=[{"type": "web_search_20250305", "name": "web_search"}],
             messages=[{
                 "role": "user",
@@ -172,8 +172,12 @@ def main():
 
         # 2. Analyst data via Claude + web search
         print(f"  Fetching analyst data via Claude...")
-        time.sleep(2)
+        time.sleep(3)
         analyst = fetch_analyst_data(stock)
+        if analyst["analyst_target_usd"] is None and analyst["analyst_rating"] == "":
+            print(f"  No data returned — retrying in 5 seconds...")
+            time.sleep(5)
+            analyst = fetch_analyst_data(stock)
         print(f"  Claude → target={analyst.get('analyst_target_usd')}  "
               f"rating={analyst.get('analyst_rating') or '—'}  "
               f"analysts={analyst.get('analyst_count')}")
