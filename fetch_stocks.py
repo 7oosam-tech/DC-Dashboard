@@ -98,8 +98,13 @@ def load_analyst_cache():
 
 
 def is_cache_fresh(cached, today_str):
-    """Return True if cached analyst data exists and is 6 days old or less."""
-    if not cached or not cached.get("analyst_target_usd"):
+    """Return True if the stock was searched within the last 6 days.
+
+    A recent null analyst_target_usd is treated as fresh — the stock has no
+    coverage and there is no point retrying Claude every day.
+    Only returns False when last_search is missing or older than 6 days.
+    """
+    if not cached:
         return False
     last_search = cached.get("last_search", "")
     if not last_search:
@@ -213,8 +218,11 @@ def main():
                 "analyst_rating":     cached.get("analyst_rating", ""),
                 "analyst_count":      cached.get("analyst_count", 0),
             }
-            print(f"  analyst → CACHED (age={age}d)  target={analyst['analyst_target_usd']}  "
-                  f"rating={analyst['analyst_rating'] or '—'}  analysts={analyst['analyst_count']}")
+            if analyst["analyst_target_usd"] is None:
+                print(f"  analyst → CACHED null (no coverage, age={age}d) — skipping")
+            else:
+                print(f"  analyst → CACHED (age={age}d)  target={analyst['analyst_target_usd']}  "
+                      f"rating={analyst['analyst_rating'] or '—'}  analysts={analyst['analyst_count']}")
         else:
             print(f"  analyst → fetching fresh data via Claude...")
             time.sleep(3)
