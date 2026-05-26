@@ -44,7 +44,7 @@ def load_fx_rates():
             else:
                 raise ValueError("no price")
         except Exception as e:
-            print(f"  FX {ccy}/USD failed ({e}) — will leave price_usd as 0")
+            print(f"  WARNING: FX {ccy}/USD failed ({e}) — USD values will be None for {ccy} stocks")
             rates[ccy] = None
     return rates
 
@@ -74,7 +74,7 @@ def fetch_price_data(stock, fx_rates):
         high_52w_usd = round(high_52w    * rate, 2)
         low_52w_usd  = round(low_52w     * rate, 2)
     else:
-        price_usd = high_52w_usd = low_52w_usd = 0.0
+        price_usd = high_52w_usd = low_52w_usd = None
 
     return {
         "price_local":  round(price_local, 2),
@@ -102,6 +102,7 @@ def fetch_analyst_data(stock):
         response = client.messages.create(
             model=MODEL,
             max_tokens=1024,
+            timeout=30,
             tools=[{"type": "web_search_20250305", "name": "web_search"}],
             messages=[{
                 "role": "user",
@@ -114,6 +115,8 @@ def fetch_analyst_data(stock):
                 )
             }]
         )
+
+        print(f"    Tokens: {response.usage.input_tokens} in / {response.usage.output_tokens} out")
 
         for block in response.content:
             if getattr(block, "type", None) == "text" and block.text:
@@ -132,7 +135,7 @@ def fetch_analyst_data(stock):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def safe_float(v, default=0.0):
+def safe_float(v, default=None):
     try:
         return round(float(v), 2) if v is not None else default
     except (TypeError, ValueError):
@@ -167,17 +170,21 @@ def main():
                   f"52w [{prices['low_52w_usd']} – {prices['high_52w_usd']}]")
         except Exception as e:
             print(f"  yfinance ERROR: {e}")
-            prices = {"price_local": 0.0, "price_usd": 0.0, "change_pct": 0.0,
-                      "high_52w_usd": 0.0, "low_52w_usd": 0.0}
+            prices = {"price_local": None, "price_usd": None, "change_pct": None,
+                      "high_52w_usd": None, "low_52w_usd": None}
+        time.sleep(0.5)
 
-        # 2. Analyst data via Claude + web search
+        # 2. Analyst data via Claude + web search (3 attempts with increasing backoff)
         print(f"  Fetching analyst data via Claude...")
         time.sleep(3)
-        analyst = fetch_analyst_data(stock)
-        if analyst["analyst_target_usd"] is None and analyst["analyst_rating"] == "":
-            print(f"  No data returned — retrying in 5 seconds...")
-            time.sleep(5)
+        analyst = {"analyst_target_usd": None, "analyst_rating": "", "analyst_count": 0}
+        for attempt in range(3):
             analyst = fetch_analyst_data(stock)
+            if analyst["analyst_target_usd"] is not None:
+                break
+            wait = 5 * (attempt + 1)
+            print(f"  No data — retrying in {wait}s (attempt {attempt+2}/3)...")
+            time.sleep(wait)
         print(f"  Claude → target={analyst.get('analyst_target_usd')}  "
               f"rating={analyst.get('analyst_rating') or '—'}  "
               f"analysts={analyst.get('analyst_count')}")
@@ -205,7 +212,7 @@ def main():
     with open("data.json", "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
-    succeeded = sum(1 for s in stocks_data if s["price_usd"] > 0)
+    succeeded = sum(1 for s in stocks_data if s["price_usd"] is not None and s["price_usd"] > 0)
     print(f"\n{'='*55}")
     print(f"✓ data.json saved — {succeeded}/{len(stocks_data)} stocks with real prices")
     print(f"  last_updated: {last_updated}")
