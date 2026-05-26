@@ -85,6 +85,32 @@ def fetch_price_data(stock, fx_rates):
     }
 
 
+# ── Analyst cache ─────────────────────────────────────────────────────────────
+
+def load_analyst_cache():
+    """Read existing data.json and return a dict keyed by stock id."""
+    try:
+        with open("data.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return {s["id"]: s for s in data.get("stocks", [])}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def is_cache_fresh(cached, today_str):
+    """Return True if cached analyst data exists and is 6 days old or less."""
+    if not cached or not cached.get("analyst_target_usd"):
+        return False
+    last_search = cached.get("last_search", "")
+    if not last_search:
+        return False
+    try:
+        age = (datetime.strptime(today_str, "%Y-%m-%d") - datetime.strptime(last_search, "%Y-%m-%d")).days
+        return age <= 6
+    except ValueError:
+        return False
+
+
 # ── Claude web search for analyst data ───────────────────────────────────────
 
 def extract_json(text):
@@ -153,7 +179,11 @@ def main():
     today = now.strftime("%Y-%m-%d")
     last_updated = now.strftime("%Y-%m-%d %H:%M UTC")
 
-    print("Loading FX rates...")
+    print("Loading existing analyst cache from data.json...")
+    analyst_cache = load_analyst_cache()
+    print(f"  Found {len(analyst_cache)} cached entries")
+
+    print("\nLoading FX rates...")
     fx_rates = load_fx_rates()
 
     stocks_data = []
@@ -174,20 +204,31 @@ def main():
                       "high_52w_usd": None, "low_52w_usd": None}
         time.sleep(0.5)
 
-        # 2. Analyst data via Claude + web search (3 attempts with increasing backoff)
-        print(f"  Fetching analyst data via Claude...")
-        time.sleep(3)
-        analyst = {"analyst_target_usd": None, "analyst_rating": "", "analyst_count": 0}
-        for attempt in range(3):
-            analyst = fetch_analyst_data(stock)
-            if analyst["analyst_target_usd"] is not None:
-                break
-            wait = 5 * (attempt + 1)
-            print(f"  No data — retrying in {wait}s (attempt {attempt+2}/3)...")
-            time.sleep(wait)
-        print(f"  Claude → target={analyst.get('analyst_target_usd')}  "
-              f"rating={analyst.get('analyst_rating') or '—'}  "
-              f"analysts={analyst.get('analyst_count')}")
+        # 2. Analyst data — use cache if fresh (≤6 days), otherwise call Claude
+        cached = analyst_cache.get(stock["id"])
+        if is_cache_fresh(cached, today):
+            age = (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(cached["last_search"], "%Y-%m-%d")).days
+            analyst = {
+                "analyst_target_usd": cached.get("analyst_target_usd"),
+                "analyst_rating":     cached.get("analyst_rating", ""),
+                "analyst_count":      cached.get("analyst_count", 0),
+            }
+            print(f"  analyst → CACHED (age={age}d)  target={analyst['analyst_target_usd']}  "
+                  f"rating={analyst['analyst_rating'] or '—'}  analysts={analyst['analyst_count']}")
+        else:
+            print(f"  analyst → fetching fresh data via Claude...")
+            time.sleep(3)
+            analyst = {"analyst_target_usd": None, "analyst_rating": "", "analyst_count": 0}
+            for attempt in range(3):
+                analyst = fetch_analyst_data(stock)
+                if analyst["analyst_target_usd"] is not None:
+                    break
+                wait = 5 * (attempt + 1)
+                print(f"  No data — retrying in {wait}s (attempt {attempt+2}/3)...")
+                time.sleep(wait)
+            print(f"  analyst → FRESH   target={analyst.get('analyst_target_usd')}  "
+                  f"rating={analyst.get('analyst_rating') or '—'}  "
+                  f"analysts={analyst.get('analyst_count')}")
 
         stocks_data.append({
             "id":                 stock["id"],

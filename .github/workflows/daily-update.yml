@@ -26,7 +26,10 @@ jobs:
       - name: Install dependencies
         run: pip install anthropic requests yfinance
 
-      - name: Fetch stock data via Claude
+      - name: Fetch stock data
+        # Prices are refreshed every run via yfinance.
+        # Analyst data (Claude API) is only re-fetched when the cached value
+        # in data.json is older than 6 days, keeping API costs low.
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python fetch_stocks.py
