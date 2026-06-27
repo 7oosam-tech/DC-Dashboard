@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-26 07:57 UTC",
+  "last_updated": "2026-06-27 06:56 UTC",
   "stocks": [
     {
       "id": "delta",
@@ -9,14 +9,14 @@
       "country": "Taiwan",
       "price_local": 1810.0,
       "currency": "TWD",
-      "price_usd": 56.79,
+      "price_usd": 56.84,
       "change_pct": -9.27,
-      "high_52w_usd": 81.11,
-      "low_52w_usd": 12.96,
+      "high_52w_usd": 81.18,
+      "low_52w_usd": 12.97,
       "analyst_target_usd": 80.16,
       "analyst_rating": "Buy",
       "analyst_count": 19,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "liteon",
@@ -26,14 +26,14 @@
       "country": "Taiwan",
       "price_local": 201.5,
       "currency": "TWD",
-      "price_usd": 6.32,
+      "price_usd": 6.33,
       "change_pct": -6.93,
-      "high_52w_usd": 8.22,
+      "high_52w_usd": 8.23,
       "low_52w_usd": 3.44,
       "analyst_target_usd": 6.6,
       "analyst_rating": "Buy",
       "analyst_count": 9,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "ls-electric",
@@ -43,14 +43,14 @@
       "country": "South Korea",
       "price_local": 203000.0,
       "currency": "KRW",
-      "price_usd": 131.95,
+      "price_usd": 132.25,
       "change_pct": -7.31,
-      "high_52w_usd": 217.75,
-      "low_52w_usd": 32.89,
+      "high_52w_usd": 218.24,
+      "low_52w_usd": 32.96,
       "analyst_target_usd": 142.15,
       "analyst_rating": "Buy",
       "analyst_count": 21,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "samsung-sdi",
@@ -60,14 +60,14 @@
       "country": "South Korea",
       "price_local": 455000.0,
       "currency": "KRW",
-      "price_usd": 295.75,
+      "price_usd": 296.42,
       "change_pct": -5.41,
-      "high_52w_usd": 469.96,
-      "low_52w_usd": 110.24,
+      "high_52w_usd": 471.01,
+      "low_52w_usd": 110.55,
       "analyst_target_usd": 426.71,
       "analyst_rating": "Buy",
       "analyst_count": 31,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "exide",
@@ -77,14 +77,14 @@
       "country": "India",
       "price_local": 390.0,
       "currency": "INR",
-      "price_usd": 4.13,
+      "price_usd": 4.14,
       "change_pct": -2.38,
       "high_52w_usd": 4.57,
       "low_52w_usd": 3.04,
       "analyst_target_usd": 4.19,
       "analyst_rating": "Buy",
       "analyst_count": 23,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "amara-raja",
@@ -96,12 +96,12 @@
       "currency": "INR",
       "price_usd": 8.85,
       "change_pct": -1.07,
-      "high_52w_usd": 11.21,
+      "high_52w_usd": 11.22,
       "low_52w_usd": 7.1,
       "analyst_target_usd": 11.42,
       "analyst_rating": "Hold",
       "analyst_count": 14,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "thermax",
@@ -111,14 +111,14 @@
       "country": "India",
       "price_local": 4845.0,
       "currency": "INR",
-      "price_usd": 51.33,
+      "price_usd": 51.38,
       "change_pct": 2.14,
-      "high_52w_usd": 53.77,
-      "low_52w_usd": 29.06,
+      "high_52w_usd": 53.82,
+      "low_52w_usd": 29.08,
       "analyst_target_usd": 40.35,
       "analyst_rating": "Hold",
       "analyst_count": 20,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "kirloskar",
@@ -130,12 +130,12 @@
       "currency": "INR",
       "price_usd": 1.2,
       "change_pct": 1.99,
-      "high_52w_usd": 1.6,
+      "high_52w_usd": 1.61,
       "low_52w_usd": 0.8,
       "analyst_target_usd": 11.03,
       "analyst_rating": "Hold",
       "analyst_count": 0,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "asetek",
@@ -152,7 +152,7 @@
       "analyst_target_usd": null,
       "analyst_rating": "",
       "analyst_count": 0,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "alfa-laval",
@@ -160,16 +160,16 @@
       "ticker": "ALFA.ST",
       "exchange": "STO",
       "country": "Sweden",
-      "price_local": 562.0,
+      "price_local": 559.2,
       "currency": "SEK",
-      "price_usd": 57.81,
-      "change_pct": -0.35,
-      "high_52w_usd": 59.64,
-      "low_52w_usd": 40.49,
+      "price_usd": 57.5,
+      "change_pct": -0.85,
+      "high_52w_usd": 59.62,
+      "low_52w_usd": 40.54,
       "analyst_target_usd": 58.89,
       "analyst_rating": "Buy",
       "analyst_count": 16,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "modine",
@@ -177,16 +177,16 @@
       "ticker": "MOD",
       "exchange": "NYSE",
       "country": "USA",
-      "price_local": 283.67,
+      "price_local": 255.99,
       "currency": "USD",
-      "price_usd": 283.67,
-      "change_pct": 0.34,
+      "price_usd": 255.99,
+      "change_pct": -10.8,
       "high_52w_usd": 323.25,
       "low_52w_usd": 86.48,
       "analyst_target_usd": 265.57,
       "analyst_rating": "Strong Buy",
       "analyst_count": 8,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "aaon",
@@ -194,16 +194,16 @@
       "ticker": "AAON",
       "exchange": "NASDAQ",
       "country": "USA",
-      "price_local": 133.26,
+      "price_local": 126.78,
       "currency": "USD",
-      "price_usd": 133.26,
-      "change_pct": -0.4,
+      "price_usd": 126.78,
+      "change_pct": -5.03,
       "high_52w_usd": 150.46,
       "low_52w_usd": 62.0,
       "analyst_target_usd": 119.0,
       "analyst_rating": "Strong Buy",
       "analyst_count": 5,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "ait",
@@ -211,16 +211,16 @@
       "ticker": "AIT",
       "exchange": "NYSE",
       "country": "USA",
-      "price_local": 343.54,
+      "price_local": 337.08,
       "currency": "USD",
-      "price_usd": 343.54,
-      "change_pct": 2.7,
+      "price_usd": 337.08,
+      "change_pct": -3.69,
       "high_52w_usd": 345.48,
       "low_52w_usd": 230.44,
       "analyst_target_usd": 330.0,
       "analyst_rating": "Strong Buy",
       "analyst_count": 8,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     },
     {
       "id": "dnow",
@@ -228,16 +228,16 @@
       "ticker": "DNOW",
       "exchange": "NYSE",
       "country": "USA",
-      "price_local": 13.45,
+      "price_local": 13.55,
       "currency": "USD",
-      "price_usd": 13.45,
-      "change_pct": 2.28,
+      "price_usd": 13.55,
+      "change_pct": -0.07,
       "high_52w_usd": 17.26,
       "low_52w_usd": 10.94,
       "analyst_target_usd": 17.67,
       "analyst_rating": "Strong Buy",
       "analyst_count": 3,
-      "last_search": "2026-06-26"
+      "last_search": "2026-06-27"
     }
   ]
 }
