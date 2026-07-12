@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-11 06:17 UTC",
+  "last_updated": "2026-07-12 06:37 UTC",
   "stocks": [
     {
       "id": "delta",
@@ -16,7 +16,7 @@
       "analyst_target_usd": 80.16,
       "analyst_rating": "Buy",
       "analyst_count": 19,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "liteon",
@@ -33,7 +33,7 @@
       "analyst_target_usd": 6.6,
       "analyst_rating": "Buy",
       "analyst_count": 9,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "ls-electric",
@@ -43,14 +43,14 @@
       "country": "South Korea",
       "price_local": 202500.0,
       "currency": "KRW",
-      "price_usd": 135.12,
+      "price_usd": 135.1,
       "change_pct": 6.92,
-      "high_52w_usd": 223.53,
+      "high_52w_usd": 223.5,
       "low_52w_usd": 33.76,
       "analyst_target_usd": 142.15,
       "analyst_rating": "Buy",
       "analyst_count": 21,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "samsung-sdi",
@@ -60,14 +60,14 @@
       "country": "South Korea",
       "price_local": 434000.0,
       "currency": "KRW",
-      "price_usd": 289.58,
+      "price_usd": 289.55,
       "change_pct": 8.09,
-      "high_52w_usd": 482.42,
-      "low_52w_usd": 116.5,
+      "high_52w_usd": 482.36,
+      "low_52w_usd": 116.49,
       "analyst_target_usd": 426.71,
       "analyst_rating": "Buy",
       "analyst_count": 31,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "exide",
@@ -84,7 +84,7 @@
       "analyst_target_usd": 4.19,
       "analyst_rating": "Buy",
       "analyst_count": 23,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "amara-raja",
@@ -101,7 +101,7 @@
       "analyst_target_usd": 11.42,
       "analyst_rating": "Hold",
       "analyst_count": 14,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "thermax",
@@ -118,7 +118,7 @@
       "analyst_target_usd": 40.35,
       "analyst_rating": "Hold",
       "analyst_count": 20,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "kirloskar",
@@ -135,7 +135,7 @@
       "analyst_target_usd": 11.03,
       "analyst_rating": "Hold",
       "analyst_count": 0,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "asetek",
@@ -152,7 +152,7 @@
       "analyst_target_usd": null,
       "analyst_rating": "",
       "analyst_count": 0,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "alfa-laval",
@@ -162,14 +162,14 @@
       "country": "Sweden",
       "price_local": 560.0,
       "currency": "SEK",
-      "price_usd": 58.03,
+      "price_usd": 57.98,
       "change_pct": -0.04,
-      "high_52w_usd": 61.37,
-      "low_52w_usd": 41.32,
+      "high_52w_usd": 61.31,
+      "low_52w_usd": 41.28,
       "analyst_target_usd": 58.89,
       "analyst_rating": "Buy",
       "analyst_count": 16,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "modine",
@@ -186,7 +186,7 @@
       "analyst_target_usd": 265.57,
       "analyst_rating": "Strong Buy",
       "analyst_count": 8,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "aaon",
@@ -203,7 +203,7 @@
       "analyst_target_usd": 119.0,
       "analyst_rating": "Strong Buy",
       "analyst_count": 5,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "ait",
@@ -220,7 +220,7 @@
       "analyst_target_usd": 330.0,
       "analyst_rating": "Strong Buy",
       "analyst_count": 8,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     },
     {
       "id": "dnow",
@@ -237,7 +237,7 @@
       "analyst_target_usd": 17.67,
       "analyst_rating": "Strong Buy",
       "analyst_count": 3,
-      "last_search": "2026-07-11"
+      "last_search": "2026-07-12"
     }
   ]
 }
