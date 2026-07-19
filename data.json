@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-18 06:08 UTC",
+  "last_updated": "2026-07-19 06:33 UTC",
   "stocks": [
     {
       "id": "delta",
@@ -16,7 +16,7 @@
       "analyst_target_usd": 80.16,
       "analyst_rating": "Buy",
       "analyst_count": 19,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "liteon",
@@ -33,7 +33,7 @@
       "analyst_target_usd": 6.6,
       "analyst_rating": "Buy",
       "analyst_count": 9,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "ls-electric",
@@ -50,7 +50,7 @@
       "analyst_target_usd": 142.15,
       "analyst_rating": "Buy",
       "analyst_count": 21,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "samsung-sdi",
@@ -67,7 +67,7 @@
       "analyst_target_usd": 426.71,
       "analyst_rating": "Buy",
       "analyst_count": 31,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "exide",
@@ -84,7 +84,7 @@
       "analyst_target_usd": 4.19,
       "analyst_rating": "Buy",
       "analyst_count": 23,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "amara-raja",
@@ -101,7 +101,7 @@
       "analyst_target_usd": 11.42,
       "analyst_rating": "Hold",
       "analyst_count": 14,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "thermax",
@@ -118,7 +118,7 @@
       "analyst_target_usd": 40.35,
       "analyst_rating": "Hold",
       "analyst_count": 20,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "kirloskar",
@@ -135,7 +135,7 @@
       "analyst_target_usd": 11.03,
       "analyst_rating": "Hold",
       "analyst_count": 0,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "asetek",
@@ -152,7 +152,7 @@
       "analyst_target_usd": null,
       "analyst_rating": "",
       "analyst_count": 0,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "alfa-laval",
@@ -162,14 +162,14 @@
       "country": "Sweden",
       "price_local": 559.6,
       "currency": "SEK",
-      "price_usd": 58.02,
+      "price_usd": 58.07,
       "change_pct": -1.03,
-      "high_52w_usd": 61.4,
-      "low_52w_usd": 41.34,
+      "high_52w_usd": 61.46,
+      "low_52w_usd": 41.37,
       "analyst_target_usd": 58.89,
       "analyst_rating": "Buy",
       "analyst_count": 16,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "modine",
@@ -186,7 +186,7 @@
       "analyst_target_usd": 265.57,
       "analyst_rating": "Strong Buy",
       "analyst_count": 8,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "aaon",
@@ -203,7 +203,7 @@
       "analyst_target_usd": 119.0,
       "analyst_rating": "Strong Buy",
       "analyst_count": 5,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "ait",
@@ -220,7 +220,7 @@
       "analyst_target_usd": 330.0,
       "analyst_rating": "Strong Buy",
       "analyst_count": 8,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     },
     {
       "id": "dnow",
@@ -237,7 +237,7 @@
       "analyst_target_usd": 17.67,
       "analyst_rating": "Strong Buy",
       "analyst_count": 3,
-      "last_search": "2026-07-18"
+      "last_search": "2026-07-19"
     }
   ]
 }
